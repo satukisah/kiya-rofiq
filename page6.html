@@ -1,0 +1,132 @@
+<?php
+// Ambil data ucapan dari Apps Script
+$scriptUrl = "https://script.google.com/macros/s/AKfycbxI6SdCnqMzDYpvxXSTh_XvCRNGIXZNnTFgiHmYZGY2zfmOCC7QtyZKMw5fPRo6e2Dy/exec";
+
+// Gunakan cURL agar lebih aman daripada file_get_contents
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $scriptUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+curl_close($ch);
+
+$ucapanList = [];
+if ($response) {
+    $decoded = json_decode($response, true);
+    if (isset($decoded['data'])) {
+        $ucapanList = $decoded['data'];
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Undangan Pernikahan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: #f8f8f8; 
+      margin: 0; 
+      padding: 20px; 
+      color: #333;
+      padding-bottom: 80px; /* kasih ruang untuk nav bawah */
+    }
+
+    h2, h3 {
+      font-family: 'Dancing Script', cursive;
+      color: #e91e63;
+      text-align: center;
+    }
+
+    .section { 
+      margin: 40px auto; 
+      max-width: 600px;
+    }
+
+    .btn { 
+      display: inline-block; 
+      padding: 12px 24px; 
+      background: #e91e63; 
+      color: #fff; 
+      text-decoration: none; 
+      border-radius: 30px; 
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: #c2185b; }
+
+    .ucapan-item { 
+      background: #fff; 
+      padding: 15px; 
+      border-radius: 10px; 
+      margin-bottom: 12px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+    }
+    .ucapan-item strong { color: #e91e63; }
+
+    /* Navigasi bawah */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(6px);
+      padding: 12px 0;
+      text-align: center;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+    }
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #444;
+      font-weight: 500;
+      transition: color 0.3s, border-bottom 0.3s;
+      padding-bottom: 4px;
+    }
+    nav a:hover {
+      color: #e91e63;
+      border-bottom: 2px solid #e91e63;
+    }
+  </style>
+</head>
+<body>
+
+<!-- RSVP -->
+<section id="rsvp" class="section">
+  <h2>RSVP Kehadiran</h2>
+  <p style="text-align:center;">Silakan konfirmasi kehadiran melalui Google Form:</p>
+  <div style="text-align:center;">
+    <a href="https://forms.gle/obbdiqToDKpx4Bx67"
+       target="_blank"
+       class="btn">Isi Form RSVP</a>
+  </div>
+</section>
+
+<!-- Ucapan -->
+<section id="ucapan" class="section">
+  <h3>Ucapan dari Tamu</h3>
+  <?php if (!empty($ucapanList)): ?>
+      <?php foreach ($ucapanList as $row): ?>
+          <div class="ucapan-item">
+              <strong><?= htmlspecialchars($row['nama']); ?></strong><br>
+              <?= nl2br(htmlspecialchars($row['ucapan'])); ?>
+          </div>
+      <?php endforeach; ?>
+  <?php else: ?>
+      <p style="text-align:center;">Belum ada ucapan.</p>
+  <?php endif; ?>
+</section>
+
+<!-- Navigasi di bawah -->
+<nav>
+  <a href="index.html">Beranda</a>
+  <a href="page7.html">3D Kiya & Rofiq</a>
+  <a href="page6.html">RSVP</a>
+  <a href="Penutup.html">Penutup</a>
+</nav>
+
+</body>
+</html>
